@@ -2,37 +2,43 @@
 import unittest
 import numpy as np
 import opencl_matmul as mm
+import opencl_matsum as ms
+import opencl_matdif as md
 
-N = 10000
+N = 1000
 FP32 = True
+A = np.random.rand(N, N).astype(np.float32)
+B = np.random.rand(N, N).astype(np.float32)
 
-# create a class
-
-
-class Test_test(unittest.TestCase):
-
-    # define a function
-    def test_xxxxxxx(self):
-
-        data = [1000, 2000, 3000]
-        result = sum(data)
-        self.assertEqual(result, 6000)
+# Test classes
 
 
 class Test_molt(unittest.TestCase):
 
-    # define a function
+    # test the moltiplication function
     def test_molt(self):
 
-        data = [1000, 2000, 3000]
-        A = np.random.rand(N//3, N).astype(np.float32)
-        B = np.random.rand(N, N//2).astype(np.float32)
-        C = A@B
-        m1 = mm.matmul(A, B, N//3, N, N//2, FP32)
-        print(m1)
-        errore = np.sum(np.subtract(m1, C))/(N*N)
+        numpyMatrix_mult = A@B
+        m1 = mm.matmul(A, B, N, N, N, FP32)
+        errore = np.sum(np.subtract(m1, numpyMatrix_mult))/(N*N)
 
         self.assertLess(errore, 1)
+
+    def test_sum(self):
+
+        numpyMatrix_sum = np.add(A, B)
+        sum = ms.matsum(A, B, N, N, FP32)
+        errore = np.sum(np.subtract(numpyMatrix_sum, sum))/(N*N)
+
+        self.assertLess(errore, 1)
+
+    def test_diff(self):
+
+        numpyMatrix_sum = np.add(A, -B)
+        diff = md.matdiff(A, B, N, N, FP32)
+        errore = np.sum(np.subtract(numpyMatrix_sum, diff))/(N*N)
+
+        self.assertLess(errore, 0.0001)
 
 
 # driver code
