@@ -35,19 +35,10 @@ def matsum(matrix1, matrix2, M, N, fp32):
                                 __kernel void matsum(__global float* A, __global float* B, __global float* C, int M, int N){
                                     size_t row = get_global_id(0);
                                     size_t col = get_global_id(1);
+                                    
+                                    int size = get_global_size(1);
 
-                                    C[row + col] = A[row + col] + B[row + col];
-                                }
-                                """).build()
-    else:
-        prog = cl.Program(ctx,  """
-                                #pragma OPENCL EXTENSION cl_khr_fp64 : enable(res)
-                                __kernel void matsum(__global double* A, __global double* B, __global double* C, int M, int N){
-                                    size_t row = get_global_id(0);
-                                    size_t col = get_global_id(1);
-
-                                    C[row + col] = A[row + col] + B[row + col];
-
+                                    C[row*size + col] = A[row*size + col] + B[row*size + col];
                                 }
                                 """).build()
 
